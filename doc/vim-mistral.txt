@@ -1,0 +1,93 @@
+==============================================================================
+vim-mistral.txt						*vim-mistral*
+
+Author:  Matti J. Kärki
+License: BSD-3-Clause license
+
+==============================================================================
+TABLE OF CONTENTS					*vim-mistral-toc*
+
+1. Introduction						|vim-mistral-intro|
+2. Configuration					|vim-mistral-config|
+3. Usage						|vim-mistral-usage|
+4. Default mappings					|vim-mistral-mappings|
+
+==============================================================================
+1. Introduction						*vim-mistral-intro*
+
+A small Vim plugin providing Mistral AI support.
+
+==============================================================================
+2. Configuration					*vim-mistral-config*
+
+Set your API key in your preferred shell configuration file, such as ~/.profile
+or ~/.zshenv:
+
+    `export MISTRAL_API_KEY=<your api key here>`
+
+Global variables that can be used to change Mistral AI's behavior:
+
+`g:mistral_model`		Model type, default: `"online"`, can be:
+				`"online"` -> uses Mistral server
+				`"local"`  -> uses local ollama server
+`g:mistral_temperature`		Model temperature, default: `0.2`
+`g:mistral_model_online`	Online model name, default: `"mistral-large-latest"`
+`g:mistral_model_local`		Local model name, default: `"mistral"`
+`g:mistral_disable_mappings`	Set this variable to `1` to disable all default
+				key mappings
+
+You can set these anywhere in your ~/.vimrc file.
+
+==============================================================================
+3. Usage						*vim-mistral-usage*
+
+							*vim-mistral-:Medit*
+:Medit {prompt}			Performs any text output operations based on
+				the given prompt. The results of the prompt are
+				|:put| to the next line.
+
+{visual} :Medit {prompt}	Performs in-place editing on visual selection
+				based on the given prompt.
+
+							*vim-mistral-:Massist*
+:Massist {prompt}		Similar to |:Medit| except editing the current
+				document, the results of the prompt are opened
+				in a new scratch buffer.
+
+{visual} :Massist {prompt}	Similar to {visual} |:Medit| except editing the
+				current document, the results of the prompt are
+				opened in a new scratch buffer.
+
+							*vim-mistral-:Mcr*
+{visual} :Mcr {prompt}		Special command to perform code reviews. Works
+				a bit like {visual} |:Massist| but uses a
+				specially crafted prompt that instructs to give
+				a limited output appropriate for code review
+				tasks.
+
+:Mask {prompt}			Ask any question, get an answer. A generic AI
+				chat creates a new scratch buffer for answers.
+				It does not have memory of past questions or
+				answers. The difference to |:Massist| is the
+				prompt template. There isn't any.
+
+							*vim-mistral-:Mask*
+{visual} :Mask {prompt}		Like |:Mask| but the text from the visual
+				selection is appended to the given prompt.
+
+==============================================================================
+
+4. Default mappings					*vim-mistral-mappings*
+>
+    vnoremap <silent> <leader>mg :Medit Fix grammar and spelling<CR>
+    vnoremap <silent> <leader>mt :Massist Translate to Finnish<CR>
+    vnoremap <silent> <leader>ms :Massist Translate to English<CR>ggVG:Medit Summarize the text using bullet points<CR>
+    vnoremap <silent> <leader>mc :Mcr Perform code review and list possible errors and improvement suggestions<CR>
+
+    nmap <silent> <leader>mg ggVG<leader>mg
+    nmap <silent> <leader>mt ggVG<leader>mt
+    nmap <silent> <leader>ms ggVG<leader>ms
+    nmap <silent> <leader>mc ggVG<leader>mc
+<
+==============================================================================
+vim:tw=78:ts=8:noet:ft=help:norl:
