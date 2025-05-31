@@ -1,6 +1,6 @@
 let s:plugin_path = resolve(expand('<sfile>:p:h') . '/..')
 
-function! vim_mistral#Chat(prompt, model)
+function! vim_mistral#Chat(system_prompt, prompt, model)
     try
 python3 << EOL
 
@@ -9,13 +9,14 @@ lib_path = vim.eval('s:plugin_path')
 sys.path.insert(0, lib_path)
 import py3.vim_mistral as mistral
 
-prompt       = vim.eval('a:prompt')
-model        = vim.eval('a:model')
-temperature  = vim.eval('g:mistral_temperature')
-model_online = vim.eval('g:mistral_model_online')
-model_local  = vim.eval('g:mistral_model_local')
+system_prompt   = vim.eval('a:system_prompt')
+prompt          = vim.eval('a:prompt')
+model           = vim.eval('a:model')
+temperature     = vim.eval('g:mistral_temperature')
+model_online    = vim.eval('g:mistral_model_online')
+model_local     = vim.eval('g:mistral_model_local')
 
-response = mistral.chat(prompt, model, temperature, model_online, model_local)
+response = mistral.chat(system_prompt, prompt, model, temperature, model_online, model_local)
 
 vim.command(f'let l:response = "{response}"')
 
@@ -28,14 +29,14 @@ EOL
     endtry
 endfunction
 
-function! vim_mistral#Edit(is_range, prompt, separator, prompt_header, model, is_new_buffer)
+function! vim_mistral#Edit(is_range, system_prompt, prompt, model, is_new_buffer)
     try
         echomsg "Mistral is processing: " . a:prompt . "..."
         let l:t_backup = @t
         if a:is_range
             silent! normal! gv"ty
 
-            let @t = vim_mistral#Chat(a:prompt_header . a:separator . a:prompt . ":\n" . @t, a:model)
+            let @t = vim_mistral#Chat(a:system_prompt, a:prompt . ":\n" . @t, a:model)
             if @t == "0"
                 return
             endif
@@ -50,7 +51,7 @@ function! vim_mistral#Edit(is_range, prompt, separator, prompt_header, model, is
                 silent! normal! gv"tp
             endif
         else
-            let @t = vim_mistral#Chat(a:prompt_header . a:separator . a:prompt, a:model)
+            let @t = vim_mistral#Chat(a:system_prompt, a:prompt, a:model)
             if @t == "0"
                 return
             endif

@@ -2,10 +2,10 @@ import json
 import os
 import urllib.request
 
-def chat(prompt, model, temperature, model_online, model_local):
+def chat(system_prompt, prompt, model, temperature, model_online, model_local):
     url = get_url(model)
     headers = get_headers(model)
-    data = get_data(prompt, model, temperature, model_online, model_local)
+    data = get_data(system_prompt, prompt, model, temperature, model_online, model_local)
 
     try:
         req = urllib.request.Request(url=url,
@@ -20,17 +20,20 @@ def chat(prompt, model, temperature, model_online, model_local):
 
     return sanitize(model, response)
 
-def get_data(prompt, model, temperature, model_online, model_local):
+def get_data(system_prompt, prompt, model, temperature, model_online, model_local):
     if model == "online":
         return json.dumps({"model": model_online,
-                          "temperature": float(temperature),
-                          "messages": [{"role": "user",
+                           "temperature": float(temperature),
+                           "messages": [{"role": "system",
+                                         "content": system_prompt},
+                                        {"role": "user",
                                         "content": prompt}]})
     if model == "local":
         return json.dumps({"model": model_local,
-                          "options": {"temperature": float(temperature)},
-                          "stream": False,
-                          "prompt": prompt})
+                           "options": {"temperature": float(temperature)},
+                           "stream": False,
+                           "system": system_prompt,
+                           "prompt": prompt})
     return json.dumps({})
 
 def get_headers(model):

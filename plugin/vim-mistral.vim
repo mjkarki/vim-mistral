@@ -27,22 +27,21 @@ if !exists('g:mistral_temperature')
     let g:mistral_temperature = 0.2
 endif
 
-let s:separator = "\n####\n"
-let s:mistral_assist_header = "You are an assistant. Answer concisely and only
+let s:mistral_assist_sprompt = "You are an assistant. Answer concisely and only
             \ what you are asked. Do not provide any explanation or comments.
             \ If the answer is source code, do not use markdown syntax."
-let s:mistral_code_review_header = "You are a code reviewer. Do not provide
+let s:mistral_code_review_sprompt = "You are a code reviewer. Do not provide
             \ revised code."
+let s:mistral_general_sprompt = "You are an assistant. Answer only what you are asked."
 
-command! -nargs=+ -range Medit call vim_mistral#Edit(<range>, <q-args>,
-            \ s:separator, s:mistral_assist_header, g:mistral_model, v:false)
-command! -nargs=+ -range Massist call vim_mistral#Edit(<range>, <q-args>,
-            \ s:separator, s:mistral_assist_header, g:mistral_model, v:true)
-command! -nargs=+ -range Mask call vim_mistral#Edit(<range>, <q-args>, "", "",
-            \ g:mistral_model, v:true)
+command! -nargs=+ -range Medit call vim_mistral#Edit(<range>, s:mistral_assist_sprompt,
+            \ <q-args>, g:mistral_model, v:false)
+command! -nargs=+ -range Massist call vim_mistral#Edit(<range>, s:mistral_assist_sprompt,
+            \ <q-args>, g:mistral_model, v:true)
+command! -nargs=+ -range Mask call vim_mistral#Edit(<range>, s:mistral_general_sprompt,
+            \ <q-args>, g:mistral_model, v:true)
 command! -nargs=+ -range Mcr if <range> | call vim_mistral#Edit(<range>,
-            \ <q-args>, s:separator, s:mistral_code_review_header,
-            \ g:mistral_model, v:true) | endif
+            \ s:mistral_code_review_sprompt, <q-args>, g:mistral_model, v:true) | endif
 
 if !exists('g:mistral_disable_mappings')
     vnoremap <silent> <leader>mg :Medit Fix grammar and spelling<CR>
